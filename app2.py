@@ -33,7 +33,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- セッション状態の管理（ページ遷移のため） ---
+# --- セッション状態の管理 ---
 if 'stage' not in st.session_state:
     st.session_state.stage = 1
 
@@ -50,11 +50,10 @@ if st.session_state.stage == 1:
     with col1:
         if st.button("はい (YES)"):
             st.session_state.stage = 2
-            st.rerun() # 画面を更新して次へ
+            st.rerun()
             
     with col2:
         if st.button("いいえ (NO)"):
-            # 「いいえ」を押しても無理やり進む演出（あるいはここでループも可）
             with st.spinner("キャンセル中... エラー発生..."):
                 time.sleep(1.5)
             st.error("キャンセルできません。プロセスを続行します。")
@@ -64,37 +63,34 @@ if st.session_state.stage == 1:
 
 # --- 第2段階：最終確認と無限ループの罠 ---
 elif st.session_state.stage == 2:
-    # バグったタイトル表示
     st.markdown('<div class="buggy-text">本 当 ニ よ ろ し い で す ね ？</div>', unsafe_allow_html=True)
     
-    # 選択肢
     choice = st.radio(
         "最終意思確認",
         ["はい、行きます", "いいえ、やめます"],
-        index=1 # 最初は「いいえ」に合わせておく（罠）
+        index=1
     )
     
-    # 決定ボタンが押された時の処理
     if st.button("決定"):
         if choice == "はい、行きます":
-            # 成功ルート
+            # --- ここから転送（サイト移動）の処理 ---
+            
+            # ★ここに飛ばしたいサイトのURLを入れてください★
+            target_url = "https://ccfolia.com/rooms/fjmlLlLSn" 
+            
             st.success("認証成功。転送を開始します...")
             with st.spinner("空間接続中..."):
-                time.sleep(3)
-            st.balloons()
-            st.markdown("## ようこそ、新しい世界へ。")
-            # ここに転生後の画像などを追加できます
+                time.sleep(2) # 2秒待ってから飛ばす
+                
+            # 自動的にサイトへ飛ばす魔法のコード（meta refresh）
+            st.markdown(f'<meta http-equiv="refresh" content="0; url={target_url}">', unsafe_allow_html=True)
             
         else:
-            # 「いいえ」を選んだ時の無限ループ（エラー）演出
+            # 無限ループ演出
             placeholder = st.empty()
-            
-            # 100回くらいエラーを表示して画面を埋め尽くす演出
-            # ※本当の無限ループ(while True)にするとブラウザが固まるため、視覚的なループにします
             error_msg = ""
             for i in range(20):
                 error_msg += f"ERROR: CANNOT ABORT process_id_{i*9382}<br>"
                 placeholder.markdown(f'<div class="error-text">{error_msg}</div>', unsafe_allow_html=True)
                 time.sleep(0.1)
-            
             st.error("システムエラー：拒否権ハアリマセン。「はい」ヲ選択シテクダサイ。")
