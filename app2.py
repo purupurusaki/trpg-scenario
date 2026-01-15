@@ -3,6 +3,10 @@ import time
 
 # --- バグっぽい演出のためのCSS設定 ---
 st.markdown("""
+/* 以下を追記すると、右上のメニューと下のフッターが消えます */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}            
 <style>
 @keyframes glitch {
   0% { transform: translate(0) }
