@@ -24,6 +24,7 @@ st.markdown("""
   animation: glitch 0.3s infinite;
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 20px;
 }
 .error-text {
     color: red;
@@ -38,6 +39,9 @@ st.markdown("""
 # --- セッション状態の管理 ---
 if 'stage' not in st.session_state:
     st.session_state.stage = 1
+# ★追加：「拒否した事実」を記憶するフラグ
+if 'refused' not in st.session_state:
+    st.session_state.refused = False
 
 # --- 第1段階：最初の質問 ---
 if st.session_state.stage == 1:
@@ -56,27 +60,30 @@ if st.session_state.stage == 1:
             
     with col2:
         if st.button("いいえ (NO)"):
-            # ★ここを派手に変更★
+            # 拒否フラグをONにする（これでずっと表示されるようになります）
+            st.session_state.refused = True
             
-            # 1. まず画面上部にトースト通知（ポップアップ）を連打
+            # 演出：トースト通知（ポップアップ）を連打
             for _ in range(3):
                 st.toast('⚠️ 警告：拒否信号ヲ検知', icon='🚫')
                 time.sleep(0.2)
             
-            # 2. 画面を埋め尽くすようなエラーログを表示
+            # 演出：エラーログが流れる
             placeholder = st.empty()
             log_text = ""
-            # エラーがだらーっと流れる演出
             for i in range(10):
                 log_text += f"SYSTEM_ALERT: User_Refusal_Denied_0x{i}A{i*3}<br>"
                 placeholder.markdown(f'<div class="error-text">{log_text}</div>', unsafe_allow_html=True)
                 time.sleep(0.1)
-            
-            # 3. 最後に巨大なバグ文字で威圧
-            st.markdown('<div class="buggy-text">逃 ゲ ラ レ ル と 思 う な</div>', unsafe_allow_html=True)
-            
-            # 4. ダメ押しで通常のエラー表示
+                
+            # エラーメッセージ
             st.error("エラー：アナタノ意思ハ関係アリマセン。「はい」ヲ押シテクダサイ。")
+
+    # --- ★ここが重要★ ---
+    # ボタンのブロックの外に書くことで、一度「いいえ」を押すと
+    # 画面を更新してもこの文字がずっと残り続けます
+    if st.session_state.refused:
+        st.markdown('<div class="buggy-text">拒 否 ス ル 権 限 ハ <br>ア リ マ セ ン</div>', unsafe_allow_html=True)
 
 # --- 第2段階：最終確認と無限ループの罠 ---
 elif st.session_state.stage == 2:
@@ -105,21 +112,4 @@ elif st.session_state.stage == 2:
                 elif i < 80:
                     status_text.text(f"魂データをアップロード中... {i}%")
                 else:
-                    status_text.text(f"転送実行中... {i}%")
-                time.sleep(0.03)
-                my_bar.progress(i + 1)
-            
-            status_text.text("転送完了。Good Luck.")
-            time.sleep(0.5)
-            
-            st.markdown(f'<meta http-equiv="refresh" content="0; url={target_url}">', unsafe_allow_html=True)
-            
-        else:
-            # 無限ループ演出
-            placeholder = st.empty()
-            error_msg = ""
-            for i in range(20):
-                error_msg += f"ERROR: CANNOT ABORT process_id_{i*9382}<br>"
-                placeholder.markdown(f'<div class="error-text">{error_msg}</div>', unsafe_allow_html=True)
-                time.sleep(0.1)
-            st.error("システムエラー：拒否権ハアリマセン。「はい」ヲ選択シテクダサイ。")
+                    status_text.text(f
