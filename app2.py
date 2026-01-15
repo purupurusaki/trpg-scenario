@@ -73,16 +73,35 @@ elif st.session_state.stage == 2:
     
     if st.button("決定"):
         if choice == "はい、行きます":
-            # --- ここから転送（サイト移動）の処理 ---
-            
             # ★ここに飛ばしたいサイトのURLを入れてください★
-            target_url = "https://ccfolia.com/rooms/fjmlLlLSn" 
+            target_url = "https://www.google.com" 
             
-            st.success("認証成功。転送を開始します...")
-            with st.spinner("空間接続中..."):
-                time.sleep(2) # 2秒待ってから飛ばす
+            st.success("認証成功。転送シーケンスを開始します。")
+            
+            # --- ここから3秒間のロード演出 ---
+            
+            # プログレスバー（読み込みゲージ）と文字を表示する箱を用意
+            my_bar = st.progress(0)
+            status_text = st.empty() 
+            
+            # 0%から100%までループ（合計約3秒）
+            for i in range(100):
+                # 進行度に合わせてメッセージを変える演出
+                if i < 30:
+                    status_text.text(f"空間座標を計算中... {i}%")
+                elif i < 80:
+                    status_text.text(f"魂データをアップロード中... {i}%")
+                else:
+                    status_text.text(f"転送実行中... {i}%")
                 
-            # 自動的にサイトへ飛ばす魔法のコード（meta refresh）
+                # 少し待つ（0.03秒 × 100回 = 3秒）
+                time.sleep(0.03)
+                my_bar.progress(i + 1)
+            
+            status_text.text("転送完了。Good Luck.")
+            time.sleep(0.5) # 最後の余韻
+                
+            # サイトへ飛ばす
             st.markdown(f'<meta http-equiv="refresh" content="0; url={target_url}">', unsafe_allow_html=True)
             
         else:
