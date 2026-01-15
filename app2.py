@@ -2,12 +2,10 @@ import streamlit as st
 import time
 
 # --- バグっぽい演出のためのCSS設定 ---
+# --- バグっぽい演出のためのCSS設定 ---
 st.markdown("""
-/* 以下を追記すると、右上のメニューと下のフッターが消えます */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}            
 <style>
+/* 既存のアニメーション設定 */
 @keyframes glitch {
   0% { transform: translate(0) }
   20% { transform: translate(-2px, 2px) }
@@ -16,6 +14,7 @@ header {visibility: hidden;}
   80% { transform: translate(2px, -2px) }
   100% { transform: translate(0) }
 }
+/* バグ文字のスタイル */
 .buggy-text {
   font-family: 'Courier New', monospace;
   font-size: 30px;
@@ -30,6 +29,7 @@ header {visibility: hidden;}
   margin-bottom: 20px;
   margin-top: 10px;
 }
+/* エラー文字のスタイル */
 .error-text {
     color: red;
     font-weight: bold;
@@ -37,8 +37,15 @@ header {visibility: hidden;}
     font-size: 16px;
     line-height: 1.2;
 }
+
+/* ★★★ ここに追記しました（メニュー隠し） ★★★ */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
 </style>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)         
+
 
 # --- セッション状態の管理 ---
 if 'stage' not in st.session_state:
