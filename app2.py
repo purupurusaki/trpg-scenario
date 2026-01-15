@@ -29,6 +29,8 @@ st.markdown("""
     color: red;
     font-weight: bold;
     font-family: 'Courier New', monospace;
+    font-size: 18px;
+    line-height: 1.2;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -54,12 +56,27 @@ if st.session_state.stage == 1:
             
     with col2:
         if st.button("いいえ (NO)"):
-            with st.spinner("キャンセル中... エラー発生..."):
-                time.sleep(1.5)
-            st.error("キャンセルできません。プロセスを続行します。")
-            time.sleep(1)
-            st.session_state.stage = 2
-            st.rerun()
+            # ★ここを派手に変更★
+            
+            # 1. まず画面上部にトースト通知（ポップアップ）を連打
+            for _ in range(3):
+                st.toast('⚠️ 警告：拒否信号ヲ検知', icon='🚫')
+                time.sleep(0.2)
+            
+            # 2. 画面を埋め尽くすようなエラーログを表示
+            placeholder = st.empty()
+            log_text = ""
+            # エラーがだらーっと流れる演出
+            for i in range(10):
+                log_text += f"SYSTEM_ALERT: User_Refusal_Denied_0x{i}A{i*3}<br>"
+                placeholder.markdown(f'<div class="error-text">{log_text}</div>', unsafe_allow_html=True)
+                time.sleep(0.1)
+            
+            # 3. 最後に巨大なバグ文字で威圧
+            st.markdown('<div class="buggy-text">逃 ゲ ラ レ ル と 思 う な</div>', unsafe_allow_html=True)
+            
+            # 4. ダメ押しで通常のエラー表示
+            st.error("エラー：アナタノ意思ハ関係アリマセン。「はい」ヲ押シテクダサイ。")
 
 # --- 第2段階：最終確認と無限ループの罠 ---
 elif st.session_state.stage == 2:
@@ -74,34 +91,27 @@ elif st.session_state.stage == 2:
     if st.button("決定"):
         if choice == "はい、行きます":
             # ★ここに飛ばしたいサイトのURLを入れてください★
-            target_url = "https://www.google.com" 
+            target_url = "https://ccfolia.com/rooms/fjmlLlLSn" 
             
             st.success("認証成功。転送シーケンスを開始します。")
             
-            # --- ここから3秒間のロード演出 ---
-            
-            # プログレスバー（読み込みゲージ）と文字を表示する箱を用意
+            # 3秒間のロード演出
             my_bar = st.progress(0)
             status_text = st.empty() 
             
-            # 0%から100%までループ（合計約3秒）
             for i in range(100):
-                # 進行度に合わせてメッセージを変える演出
                 if i < 30:
                     status_text.text(f"空間座標を計算中... {i}%")
                 elif i < 80:
                     status_text.text(f"魂データをアップロード中... {i}%")
                 else:
                     status_text.text(f"転送実行中... {i}%")
-                
-                # 少し待つ（0.03秒 × 100回 = 3秒）
                 time.sleep(0.03)
                 my_bar.progress(i + 1)
             
             status_text.text("転送完了。Good Luck.")
-            time.sleep(0.5) # 最後の余韻
-                
-            # サイトへ飛ばす
+            time.sleep(0.5)
+            
             st.markdown(f'<meta http-equiv="refresh" content="0; url={target_url}">', unsafe_allow_html=True)
             
         else:
