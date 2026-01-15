@@ -89,4 +89,48 @@ if st.session_state.stage == 1:
             # ダメ押しのエラー表示（これはボタンの下に出るが、補助的なのでOK）
             st.error("エラー：アナタノ意思ハ関係アリマセン。「はい」ヲ押シテクダサイ。")
 
-# --- 第2段階：最終確認と無限ループの罠
+# --- 第2段階：最終確認と無限ループの罠 ---
+elif st.session_state.stage == 2:
+    # 2段階目も画面上部にバグ文字を出す
+    st.markdown('<div class="buggy-text">本 当 ニ よ ろ し い で す ね ？</div>', unsafe_allow_html=True)
+    
+    choice = st.radio(
+        "最終意思確認",
+        ["はい、行きます", "いいえ、やめます"],
+        index=1
+    )
+    
+    if st.button("決定"):
+        if choice == "はい、行きます":
+            # ★転送先URL★
+            target_url = "https://ccfolia.com/rooms/fjmlLlLSn" 
+            
+            st.success("認証成功。転送シーケンスを開始します。")
+            
+            my_bar = st.progress(0)
+            status_text = st.empty() 
+            
+            for i in range(100):
+                if i < 30:
+                    status_text.text(f"空間座標を計算中... {i}%")
+                elif i < 80:
+                    status_text.text(f"魂データをアップロード中... {i}%")
+                else:
+                    status_text.text(f"転送実行中... {i}%")
+                time.sleep(0.03)
+                my_bar.progress(i + 1)
+            
+            status_text.text("転送完了。Good Luck.")
+            time.sleep(0.5)
+            
+            st.markdown(f'<meta http-equiv="refresh" content="0; url={target_url}">', unsafe_allow_html=True)
+            
+        else:
+            # 無限ループ演出（これも画面上部に出るように placeholder を使う）
+            top_placeholder = st.empty() # 上部に場所を作る
+            error_msg = ""
+            for i in range(20):
+                error_msg += f"ERROR: CANNOT ABORT process_id_{i*9382}<br>"
+                top_placeholder.markdown(f'<div class="error-text">{error_msg}</div>', unsafe_allow_html=True)
+                time.sleep(0.1)
+            st.error("システムエラー：拒否権ハアリマセン。「はい」ヲ選択シテクダサイ。")
